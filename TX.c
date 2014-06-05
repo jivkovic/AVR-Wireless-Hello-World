@@ -190,25 +190,27 @@ void receive_payload(void)
 	//cli();	//Disable global interrupt
 }
 
-
+//small led indicator
 void blinky(){
 	int i;
 	for (i=0; i<5; i++){
-		SETBIT(PORTB,0);		//För att se att dioden fungerar!
+		SETBIT(PORTB,0);		
 		_delay_ms(50);
 		CLEARBIT(PORTB,0);
 		_delay_ms(50);
 	}
 }
 
+//smaller led indicator
 void blinky2(){
 	int i;
-		SETBIT(PORTB,0);		//För att se att dioden fungerar!
+		SETBIT(PORTB,0);		
 		_delay_ms(50);
 		CLEARBIT(PORTB,0);
 		_delay_ms(50);
 }
 
+//test SPI
 void test(){
 	
 	uint8_t val[5];
@@ -274,10 +276,12 @@ int main(void)
 	CLEARBIT(PORTB,0);
 	_delay_ms(200);
 
+	//test SPI
 	test();
 	
 	_delay_ms(200);
 	
+	//transmit loop
 	transmit();
 	
 	return 0;

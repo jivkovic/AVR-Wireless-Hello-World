@@ -205,18 +205,19 @@ void receive_payload(void)
 	//cli();	//Disable global interrupt
 }
 
+//small led indicator
 void blinky(){
 	int i;
 	for (i=0; i<5; i++){
-		SETBIT(PORTB,0);		//För att se att dioden fungerar!
+		SETBIT(PORTB,0);	
 		_delay_ms(50);
 		CLEARBIT(PORTB,0);
 		_delay_ms(50);
 	}
 }
 
+//SPI test function
 void test(){
-	
 	uint8_t val[5];	
 
 	reset();
@@ -255,9 +256,7 @@ int recieve(){
 		receive_payload();
 		//_delay_ms(100);
 		if (((GetReg(STATUS) & (1 << 6)) != 0 ))
-		//if ((GetReg(STATUS)&(1<<RX_DR))!=0)
 		{
-			//data=WriteToNrf(R, R_RX_PAYLOAD, data, 1);
 			blinky();
 		}
 	}
@@ -276,10 +275,12 @@ int main(void)
 	CLEARBIT(PORTB,0);
 	_delay_ms(200);
 	
+	//test SPI
 	test();
 	
 	_delay_ms(200);
 	
+	//recieve loop
 	recieve();
 	
 	return 0;
