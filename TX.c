@@ -248,7 +248,6 @@ void ioinit(void)
 int transmit(){
 	while(1)
 	{
-		reset();
 		uint8_t W_buffer[5];
 		int i;
 		for (i=0; i<5; i++){
