@@ -244,6 +244,7 @@ void ioinit(void)
 	DDRB |= (1<<DDB0); //led
 }
 
+// transmit packet every 1 sec, and blink led shortly
 int transmit(){
 	while(1)
 	{

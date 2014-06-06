@@ -239,9 +239,9 @@ int recieve(){
 	{
 		reset();
 		receive_payload();
-		//_delay_ms(100);
 		if (((GetReg(STATUS) & (1 << 6)) != 0 ))
 		{
+			//hooray, packet recieved!
 			blinky();
 		}
 	}
@@ -252,7 +252,6 @@ int main(void)
 	_delay_ms(5000);
 	InitSPI();
 	ioinit();
-	//INT0_interrupt_init();
 	nrf24L01_init();
 
 	SETBIT(PORTB,0);
