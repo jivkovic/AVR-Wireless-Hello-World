@@ -36,21 +36,6 @@ void InitSPI(void)
 	CLEARBIT(PORTB, 1);	//CE low to start with, nrf'en ska inte sända/ta emot n?t ännu!
 }
 
-void  INT0_interrupt_init ( void )
-{
-	DDRD &= ~(1 << DDD2);     // Clear the PD2 pin
-	// PD2 (INT0 pin) is now an input
-	
-	////PORTD |= (1 << PORTD2);    // turn On the Pull-up
-	// PD0 is now an input with pull-up enabled
-	
-	MCUCR |=(1<<ISC01); // INT0 falling edge PD2
-	MCUCR &=~(1<<ISC00); // INT0 falling edge PD2
-	
-	GICR |=(1<<INT0);       // enablar int0
-	sei (); // Enable global interrupts are then
-}
-
 char WriteByteSPI(unsigned char cData)
 {
 	//Load byte to Data register

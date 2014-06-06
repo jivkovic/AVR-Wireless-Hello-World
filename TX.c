@@ -247,7 +247,6 @@ void ioinit(void)
 int transmit(){
 	while(1)
 	{
-		//Wait for USART-interrupt to send data...
 		reset();
 		uint8_t W_buffer[5];
 		int i;
