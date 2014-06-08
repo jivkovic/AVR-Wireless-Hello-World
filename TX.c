@@ -14,7 +14,7 @@
 
 #include "nRF24L01.h"
 
-#define dataLen 5  //data packet length
+#define dataLen 3  //data packet length
 #define W 1
 #define R 0
 
@@ -248,17 +248,22 @@ void ioinit(void)
 int transmit(){
 	while(1)
 	{
-		uint8_t W_buffer[5];
+		reset();
+		_delay_ms(100);
+		uint8_t W_buffer[3];
 		int i;
-		for (i=0; i<5; i++){
+		for (i=0; i<3; i++){
 			W_buffer[i] = 0x93;
 		}
 		transmit_payload(W_buffer);
 		_delay_ms(100);
-		reset();
-		_delay_ms(1000);
 		
-		blinky2();
+		//check for successful writing
+		if (GetReg(SETUP_RETR) == 0x2F)
+		{
+			blinky2();
+		}
+		_delay_ms(1000);
 	}
 }
 
