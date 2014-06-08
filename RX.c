@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * RF_Tranceiver.c
  *
  * Created: 2012-08-10 15:24:35
@@ -14,7 +14,7 @@
 
 #include "nRF24L01.h"
 
-#define dataLen 5  //längd p? datapacket som skickas/tas emot
+#define dataLen 3  //lÃ¤ngd p? datapacket som skickas/tas emot
 #define W 1
 #define R 0
 
@@ -26,14 +26,14 @@ uint8_t *arr;
 void InitSPI(void)
 {
 	//Set SCK (PB5), MOSI (PB3) , CSN (SS & PB2) & C  as outport
-	//OBS!!! M?ste sättas innan SPI-Enable neadn
+	//OBS!!! M?ste sÃ¤ttas innan SPI-Enable neadn
 	DDRB |= (1<<DDB5) | (1<<DDB3) | (1<<DDB2) |(1<<DDB1);
 	
-	/* Enable SPI, Master, set clock rate fck/16 .. kan ändra hastighet utan att det gör s? mycket*/
+	/* Enable SPI, Master, set clock rate fck/16 .. kan Ã¤ndra hastighet utan att det gÃ¶r s? mycket*/
 	SPCR |= (1<<SPE)|(1<<MSTR);// |(1<<SPR0) |(1<<SPR1);
 	
-	SETBIT(PORTB, 2);	//CSN IR_High to start with, vi ska inte skicka n?t till nrf'en ännu!
-	CLEARBIT(PORTB, 1);	//CE low to start with, nrf'en ska inte sända/ta emot n?t ännu!
+	SETBIT(PORTB, 2);	//CSN IR_High to start with, vi ska inte skicka n?t till nrf'en Ã¤nnu!
+	CLEARBIT(PORTB, 1);	//CE low to start with, nrf'en ska inte sÃ¤nda/ta emot n?t Ã¤nnu!
 }
 
 char WriteByteSPI(unsigned char cData)
@@ -44,7 +44,7 @@ char WriteByteSPI(unsigned char cData)
 	/* Wait for transmission complete */
 	while(!(SPSR & (1<<SPIF)));
 	
-	//Returnera det som sänts tillbaka av nrf'en (första g?ngen efter csn-l?g kommer Statusregistert)
+	//Returnera det som sÃ¤nts tillbaka av nrf'en (fÃ¶rsta g?ngen efter csn-l?g kommer Statusregistert)
 	return SPDR;
 }
 
@@ -52,18 +52,18 @@ uint8_t *WriteToNrf(uint8_t ReadWrite, uint8_t reg, uint8_t *val, uint8_t antVal
 {
 	//cli();	//disable global interrupt
 	
-	if (ReadWrite == W)	//W=vill skriva till nrf-en (R=läsa av den, R_REGISTER (0x00) ,s? skiter i en else funktion)
+	if (ReadWrite == W)	//W=vill skriva till nrf-en (R=lÃ¤sa av den, R_REGISTER (0x00) ,s? skiter i en else funktion)
 	{
 		reg = W_REGISTER + reg;	//ex: reg = EN_AA: 0b0010 0000 + 0b0000 0001 = 0b0010 0001
 	}
 	
-	//Static uint8_t för att det ska g? att returnera en array (lägg märke till "*" uppe p? funktionen!!!)
-	static uint8_t ret[32];	//antar att det längsta man vill läsa ut när man kallar p? "R" är dataleng-l?ngt, dvs använder man bara 1byte datalengd ? vill läsa ut 5byte RF_Adress s? skriv 5 här ist!!!
+	//Static uint8_t fÃ¶r att det ska g? att returnera en array (lÃ¤gg mÃ¤rke till "*" uppe p? funktionen!!!)
+	static uint8_t ret[32];	//antar att det lÃ¤ngsta man vill lÃ¤sa ut nÃ¤r man kallar p? "R" Ã¤r dataleng-l?ngt, dvs anvÃ¤nder man bara 1byte datalengd ? vill lÃ¤sa ut 5byte RF_Adress s? skriv 5 hÃ¤r ist!!!
 	
-	_delay_us(10);		//alla delay är s? att nrfen ska hinna med! (microsekunder)
-	CLEARBIT(PORTB, 2);	//CSN low = nrf-chippet börjar lyssna
+	_delay_us(10);		//alla delay Ã¤r s? att nrfen ska hinna med! (microsekunder)
+	CLEARBIT(PORTB, 2);	//CSN low = nrf-chippet bÃ¶rjar lyssna
 	_delay_us(10);
-	WriteByteSPI(reg);	//första SPI-kommandot efter CSN-l?g berättar för nrf'en vilket av dess register som ska redigeras ex: 0b0010 0001 write to registry EN_AA
+	WriteByteSPI(reg);	//fÃ¶rsta SPI-kommandot efter CSN-l?g berÃ¤ttar fÃ¶r nrf'en vilket av dess register som ska redigeras ex: 0b0010 0001 write to registry EN_AA
 	_delay_us(10);
 	
 	int i;
@@ -71,12 +71,12 @@ uint8_t *WriteToNrf(uint8_t ReadWrite, uint8_t reg, uint8_t *val, uint8_t antVal
 	{
 		if (ReadWrite == R && reg != W_TX_PAYLOAD)
 		{
-			ret[i]=WriteByteSPI(NOP);	//Andra och resten av SPI kommandot säger ?t nrfen vilka värden som i det här fallet ska läsas
+			ret[i]=WriteByteSPI(NOP);	//Andra och resten av SPI kommandot sÃ¤ger ?t nrfen vilka vÃ¤rden som i det hÃ¤r fallet ska lÃ¤sas
 			_delay_us(10);
 		}
 		else
 		{
-			WriteByteSPI(val[i]);	//Andra och resten av SPI kommandot säger ?t nrfen vilka värden som i det här fallet ska skrivas till
+			WriteByteSPI(val[i]);	//Andra och resten av SPI kommandot sÃ¤ger ?t nrfen vilka vÃ¤rden som i det hÃ¤r fallet ska skrivas till
 			_delay_us(10);
 		}
 	}
@@ -87,71 +87,71 @@ uint8_t *WriteToNrf(uint8_t ReadWrite, uint8_t reg, uint8_t *val, uint8_t antVal
 
 uint8_t GetReg(uint8_t reg)
 {
-	//andvändning: USART_Transmit(GetReg(STATUS)); //där status är registret du vill kolla
+	//andvÃ¤ndning: USART_Transmit(GetReg(STATUS)); //dÃ¤r status Ã¤r registret du vill kolla
 	_delay_us(10);
 	CLEARBIT(PORTB, 2);	//CSN low
 	_delay_us(10);
-	WriteByteSPI(R_REGISTER + reg);	//Vilket register vill du läsa (nu med R_Register för att inget ska skrivas till registret)
+	WriteByteSPI(R_REGISTER + reg);	//Vilket register vill du lÃ¤sa (nu med R_Register fÃ¶r att inget ska skrivas till registret)
 	_delay_us(10);
-	reg = WriteByteSPI(NOP);	//Skicka NOP antalet byte som du vill hämta (oftast 1g?ng, men t.ex addr är 5 byte!) och spara isf inte i "reg" utan en array med en loop
+	reg = WriteByteSPI(NOP);	//Skicka NOP antalet byte som du vill hÃ¤mta (oftast 1g?ng, men t.ex addr Ã¤r 5 byte!) och spara isf inte i "reg" utan en array med en loop
 	_delay_us(10);
 	SETBIT(PORTB, 2);	//CSN IR_High
-	return reg;	// Returnerar registret förhoppningsvis med bit5=1 (tx_ds=lyckad sändning)
+	return reg;	// Returnerar registret fÃ¶rhoppningsvis med bit5=1 (tx_ds=lyckad sÃ¤ndning)
 }
 
 void nrf24L01_init(void)
 {
 	_delay_ms(100);	//allow radio to reach power down if shut down
 	
-	uint8_t val[5];	//en array av integers som skickar värden till WriteToNrf-funktionen
+	uint8_t val[5];	//en array av integers som skickar vÃ¤rden till WriteToNrf-funktionen
 	
-	//EN_AA - (auto-acknowledgements) - Transmittern f?r svar av recivern att packetet kommit fram, grymt!!! (behöver endast vara enablad p? Transmittern!)
-	//Kräver att Transmittern även har satt SAMMA RF_Adress p? sin mottagarkanal nedan ex: RX_ADDR_P0 = TX_ADDR
-	val[0]=0x01;	//ger första integern i arrayen "val" ett värde: 0x01=EN_AA p? pipe P0.
-	WriteToNrf(W, EN_AA, val, 1);	//W=ska skriva/ändra n?t i nrfen, EN_AA=vilket register ska ändras, val=en array med 1 till 32 värden  som ska skrivas till registret, 1=antal värden som ska läsas ur "val" arrayen.
+	//EN_AA - (auto-acknowledgements) - Transmittern f?r svar av recivern att packetet kommit fram, grymt!!! (behÃ¶ver endast vara enablad p? Transmittern!)
+	//KrÃ¤ver att Transmittern Ã¤ven har satt SAMMA RF_Adress p? sin mottagarkanal nedan ex: RX_ADDR_P0 = TX_ADDR
+	val[0]=0x01;	//ger fÃ¶rsta integern i arrayen "val" ett vÃ¤rde: 0x01=EN_AA p? pipe P0.
+	WriteToNrf(W, EN_AA, val, 1);	//W=ska skriva/Ã¤ndra n?t i nrfen, EN_AA=vilket register ska Ã¤ndras, val=en array med 1 till 32 vÃ¤rden  som ska skrivas till registret, 1=antal vÃ¤rden som ska lÃ¤sas ur "val" arrayen.
 	
 	//SETUP_RETR (the setup for "EN_AA")
 	val[0]=0x2F;	//0b0010 00011 "2" sets it up to 750uS delay between every retry (at least 500us at 250kbps and if payload >5bytes in 1Mbps, and if payload >15byte in 2Mbps) "F" is number of retries (1-15, now 15)
 	WriteToNrf(W, SETUP_RETR, val, 1);
 	
-	//Väljer vilken/vilka datapipes (0-5) som ska vara ig?ng.
+	//VÃ¤ljer vilken/vilka datapipes (0-5) som ska vara ig?ng.
 	val[0]=0x01;
 	WriteToNrf(W, EN_RXADDR, val, 1); //enable data pipe 0
 	
-	//RF_Adress width setup (hur m?nga byte ska RF_Adressen best? av? 1-5 bytes) (5bytes säkrare d? det finns störningar men l?ngsammare dataöverföring) 5addr-32data-5addr-32data....
+	//RF_Adress width setup (hur m?nga byte ska RF_Adressen best? av? 1-5 bytes) (5bytes sÃ¤krare d? det finns stÃ¶rningar men l?ngsammare dataÃ¶verfÃ¶ring) 5addr-32data-5addr-32data....
 	val[0]=0x03;
 	WriteToNrf(W, SETUP_AW, val, 1); //0b0000 00011 motsvarar 5byte RF_Adress
 	
-	//RF channel setup - väljer frekvens 2,400-2,527GHz 1MHz/steg
+	//RF channel setup - vÃ¤ljer frekvens 2,400-2,527GHz 1MHz/steg
 	val[0]=0x01;
 	WriteToNrf(W, RF_CH, val, 1); //RF channel registry 0b0000 0001 = 2,401GHz (samma p? TX ? RX)
 	
-	//RF setup	- väljer effekt och överföringshastighet
+	//RF setup	- vÃ¤ljer effekt och Ã¶verfÃ¶ringshastighet
 	val[0]=0x07;
-	WriteToNrf(W, RF_SETUP, val, 1); //00000111 bit 3="0" ger lägre överföringshastighet 1Mbps=Längre räckvidd, bit 2-1 ger effektläge hög (-0dB) ("11"=(-18dB) ger lägre effekt =strömsn?lare men lägre range)
+	WriteToNrf(W, RF_SETUP, val, 1); //00000111 bit 3="0" ger lÃ¤gre Ã¶verfÃ¶ringshastighet 1Mbps=LÃ¤ngre rÃ¤ckvidd, bit 2-1 ger effektlÃ¤ge hÃ¶g (-0dB) ("11"=(-18dB) ger lÃ¤gre effekt =strÃ¶msn?lare men lÃ¤gre range)
 	
-	//RX RF_Adress setup 5 byte - väljer RF_Adressen p? Recivern (M?ste ges samma RF_Adress om Transmittern har EN_AA p?slaget!!!)
+	//RX RF_Adress setup 5 byte - vÃ¤ljer RF_Adressen p? Recivern (M?ste ges samma RF_Adress om Transmittern har EN_AA p?slaget!!!)
 	int i;
 	for(i=0; i<5; i++)
 	{
-		val[i]=0x12;	//RF channel registry 0b10101011 x 5 - skriver samma RF_Adress 5ggr för att f? en lätt och säker RF_Adress (samma p? transmitterns chip!!!)
+		val[i]=0x12;	//RF channel registry 0b10101011 x 5 - skriver samma RF_Adress 5ggr fÃ¶r att f? en lÃ¤tt och sÃ¤ker RF_Adress (samma p? transmitterns chip!!!)
 	}
-	WriteToNrf(W, RX_ADDR_P0, val, 5); //0b0010 1010 write registry - eftersom vi valde pipe 0 i "EN_RXADDR" ovan, ger vi RF_Adressen till denna pipe. (kan ge olika RF_Adresser till olika pipes och därmed lyssna p? olika transmittrar)
+	WriteToNrf(W, RX_ADDR_P0, val, 5); //0b0010 1010 write registry - eftersom vi valde pipe 0 i "EN_RXADDR" ovan, ger vi RF_Adressen till denna pipe. (kan ge olika RF_Adresser till olika pipes och dÃ¤rmed lyssna p? olika transmittrar)
 	
-	//TX RF_Adress setup 5 byte -  väljer RF_Adressen p? Transmittern (kan kommenteras bort p? en "ren" Reciver)
-	//int i; //?teranvänder föreg?ende i...
+	//TX RF_Adress setup 5 byte -  vÃ¤ljer RF_Adressen p? Transmittern (kan kommenteras bort p? en "ren" Reciver)
+	//int i; //?teranvÃ¤nder fÃ¶reg?ende i...
 	for(i=0; i<5; i++)
 	{
-		val[i]=0x12;	//RF channel registry 0b10111100 x 5 - skriver samma RF_Adress 5ggr för att f? en lätt och säker RF_Adress (samma p? Reciverns chip och p? RX-RF_Adressen ovan om EN_AA enablats!!!)
+		val[i]=0x12;	//RF channel registry 0b10111100 x 5 - skriver samma RF_Adress 5ggr fÃ¶r att f? en lÃ¤tt och sÃ¤ker RF_Adress (samma p? Reciverns chip och p? RX-RF_Adressen ovan om EN_AA enablats!!!)
 	}
 	WriteToNrf(W, TX_ADDR, val, 5);
 	
-	// payload width setup - Hur m?nga byte ska skickas per sändning? 1-32byte
-	val[0]=dataLen;		//"0b0000 0001"=1 byte per 5byte RF_Adress  (kan välja upp till "0b00100000"=32byte/5byte RF_Adress) (definierat högst uppe i global variabel!)
+	// payload width setup - Hur m?nga byte ska skickas per sÃ¤ndning? 1-32byte
+	val[0]=dataLen;		//"0b0000 0001"=1 byte per 5byte RF_Adress  (kan vÃ¤lja upp till "0b00100000"=32byte/5byte RF_Adress) (definierat hÃ¶gst uppe i global variabel!)
 	WriteToNrf(W, RX_PW_P0, val, 1);
 	
-	//CONFIG reg setup - Nu är allt inställt, boota upp nrf'en och gör den antingen Transmitter lr Reciver
-	val[0]=0x1F;  //0b0000 1110 config registry	bit "1":1=power up,  bit "0":0=transmitter (bit "0":1=Reciver) (bit "4":1=>mask_Max_RT,dvs IRQ-vektorn reagerar inte om sändningen misslyckades.
+	//CONFIG reg setup - Nu Ã¤r allt instÃ¤llt, boota upp nrf'en och gÃ¶r den antingen Transmitter lr Reciver
+	val[0]=0x1F;  //0b0000 1110 config registry	bit "1":1=power up,  bit "0":0=transmitter (bit "0":1=Reciver) (bit "4":1=>mask_Max_RT,dvs IRQ-vektorn reagerar inte om sÃ¤ndningen misslyckades.
 	WriteToNrf(W, CONFIG, val, 1);
 	
 	//device need 1.5ms to reach standby mode
@@ -162,20 +162,20 @@ void nrf24L01_init(void)
 
 void transmit_payload(uint8_t * W_buff)
 {
-	WriteToNrf(R, FLUSH_TX, W_buff, 0); //skickar 0xE1 som flushar registret för att gammal data inte ska ligga ? vänta p? att bli skickad när man vill skicka ny data! R st?r för att W_REGISTER inte ska läggas till. skickar inget kommando efterr?t eftersom det inte behövs! W_buff[]st?r bara där för att en array m?ste finnas där...
+	WriteToNrf(R, FLUSH_TX, W_buff, 0); //skickar 0xE1 som flushar registret fÃ¶r att gammal data inte ska ligga ? vÃ¤nta p? att bli skickad nÃ¤r man vill skicka ny data! R st?r fÃ¶r att W_REGISTER inte ska lÃ¤ggas till. skickar inget kommando efterr?t eftersom det inte behÃ¶vs! W_buff[]st?r bara dÃ¤r fÃ¶r att en array m?ste finnas dÃ¤r...
 	
-	WriteToNrf(R, W_TX_PAYLOAD, W_buff, dataLen);	//skickar datan i W_buff till nrf-en (obs g?r ej att läsa w_tx_payload-registret!!!)
+	WriteToNrf(R, W_TX_PAYLOAD, W_buff, dataLen);	//skickar datan i W_buff till nrf-en (obs g?r ej att lÃ¤sa w_tx_payload-registret!!!)
 	
 	//sei();	//enable global interrupt- redan p?!
 	//USART_Transmit(GetReg(STATUS));
 
-	_delay_ms(10);		//behöver det verkligen vara ms ? inte us??? JAAAAAA! annars funkar det inte!!!
-	SETBIT(PORTB, 1);	//CE hög=sänd data	INT0 interruptet körs när sändningen lyckats och om EN_AA är p?, ocks? svaret fr?n recivern är mottagen
+	_delay_ms(10);		//behÃ¶ver det verkligen vara ms ? inte us??? JAAAAAA! annars funkar det inte!!!
+	SETBIT(PORTB, 1);	//CE hÃ¶g=sÃ¤nd data	INT0 interruptet kÃ¶rs nÃ¤r sÃ¤ndningen lyckats och om EN_AA Ã¤r p?, ocks? svaret fr?n recivern Ã¤r mottagen
 	_delay_us(20);		//minst 10us!
 	CLEARBIT(PORTB, 1);	//CE l?g
-	_delay_ms(10);		//behöver det verkligen vara ms ? inte us??? JAAAAAA! annars funkar det inte!!!
+	_delay_ms(10);		//behÃ¶ver det verkligen vara ms ? inte us??? JAAAAAA! annars funkar det inte!!!
 
-	//cli();	//Disable global interrupt... ajabaja, d? stängs USART_RX-lyssningen av!
+	//cli();	//Disable global interrupt... ajabaja, d? stÃ¤ngs USART_RX-lyssningen av!
 
 }
 
@@ -201,9 +201,17 @@ void blinky(){
 	}
 }
 
+//smaller led indicator
+void blinky2(){
+	int i;
+	SETBIT(PORTB,0);
+	_delay_ms(50);
+	CLEARBIT(PORTB,0);
+	_delay_ms(50);
+}
+
 //SPI test function
 void test(){
-	uint8_t val[5];	
 
 	reset();
 	_delay_ms(500);
@@ -224,7 +232,7 @@ void reset(void)
 	_delay_us(10);
 	WriteByteSPI(W_REGISTER + STATUS);	//
 	_delay_us(10);
-	WriteByteSPI(0x70);	//radedrar alla irq i statusregistret (för att kunna lyssna igen)
+	WriteByteSPI(0x70);	//radedrar alla irq i statusregistret (fÃ¶r att kunna lyssna igen)
 	_delay_us(10);
 	SETBIT(PORTB, 2);	//CSN IR_High
 }
@@ -242,7 +250,7 @@ int recieve(){
 		if (((GetReg(STATUS) & (1 << 6)) != 0 ))
 		{
 			//hooray, packet recieved!
-			blinky();
+			blinky2();
 		}
 	}
 }
