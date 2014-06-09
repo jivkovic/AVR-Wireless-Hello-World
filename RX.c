@@ -14,7 +14,7 @@
 
 #include "nRF24L01.h"
 
-#define dataLen 3  //längd p? datapacket som skickas/tas emot
+#define dataLen 5  //längd p? datapacket som skickas/tas emot
 #define W 1
 #define R 0
 
@@ -184,7 +184,7 @@ void receive_payload(void)
 	//sei();		//Enable global interrupt
 	
 	SETBIT(PORTB, 1);	//CE IR_High = "Lyssnar"
-	_delay_ms(1000);	//lyssnar i 1s och om mottaget g?r int0-interruptvektor ig?ng
+	_delay_ms(300);	//lyssnar i 1s och om mottaget g?r int0-interruptvektor ig?ng
 	CLEARBIT(PORTB, 1); //ce l?g igen -sluta lyssna
 	
 	//cli();	//Disable global interrupt
@@ -247,10 +247,12 @@ int recieve(){
 	{
 		reset();
 		receive_payload();
+		_delay_us(10);
 		if (((GetReg(STATUS) & (1 << 6)) != 0 ))
 		{
 			//hooray, packet recieved!
 			blinky2();
+			data=NrfWriteTo(R,R_RX_PAYLOAD,data,5);
 		}
 	}
 }

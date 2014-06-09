@@ -14,7 +14,7 @@
 
 #include "nRF24L01.h"
 
-#define dataLen 3  //data packet length
+#define dataLen 5  //data packet length
 #define W 1
 #define R 0
 
@@ -203,7 +203,6 @@ void blinky(){
 
 //smaller led indicator
 void blinky2(){
-	int i;
 		SETBIT(PORTB,0);		
 		_delay_ms(50);
 		CLEARBIT(PORTB,0);
@@ -212,8 +211,6 @@ void blinky2(){
 
 //test SPI
 void test(){
-	
-	uint8_t val[5];
 
 	reset();
 	_delay_ms(500);
@@ -249,21 +246,23 @@ int transmit(){
 	while(1)
 	{
 		reset();
-		_delay_ms(100);
-		uint8_t W_buffer[3];
+		_delay_ms(50);
+		if (GetReg(STATUS)==0x0E) blinky2();
+		uint8_t W_buffer[5];
 		int i;
-		for (i=0; i<3; i++){
+		for (i=0; i<5; i++){
 			W_buffer[i] = 0x93;
 		}
 		transmit_payload(W_buffer);
-		_delay_ms(100);
-		
+		_delay_ms(10);
+		if (GetReg(STATUS)==0x1E) blinky2();
+		if (((GetReg(STATUS) & (1 << 4)) == 0 )) blinky();
 		//check for successful writing
-		if (GetReg(SETUP_RETR) == 0x2F)
-		{
-			blinky2();
-		}
-		_delay_ms(1000);
+		//if (GetReg(SETUP_RETR) == 0x2F)
+		//{
+			//blinky2(); (always works)
+		//}
+		_delay_ms(3000);
 	}
 }
 
