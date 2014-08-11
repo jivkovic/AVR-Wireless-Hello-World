@@ -3,7 +3,8 @@
  *
  * Created: 2012-08-10 15:24:35
  *  Author: Kalle
- *  Atmega88
+ *  Atmega8
+ *  Contribution: Josip, 2014
  */ 
 
 #include <avr/io.h>
